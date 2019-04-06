@@ -33,11 +33,11 @@ def main(arg1) {
     print x;
     if ((2) == (3)) {
         if (1) {
-        };
+        }
     } else {
         exit(-(arg1));
-    };
-};"""
+    }
+}"""
 
 
 def test_program2():
@@ -70,8 +70,8 @@ def factorial(n) {
         1;
     } else {
         (n) * (factorial((n) - (1)));
-    };
-};"""
+    }
+}"""
 
 
 def test_number():
@@ -83,14 +83,14 @@ def test_functiondefinition():
     func = FunctionDefinition("foo", Function([], []))
     assert pretty_print(func) == """\
 def foo() {
-};"""
+}"""
 
 
 def test_conditional():
     condition = Conditional(Number(42), [], [])
     assert pretty_print(condition) == """\
 if (42) {
-};"""
+}"""
 
 
 def test_print(capsys):
