@@ -2,6 +2,11 @@
 from model import *
 
 
+def fold_constants(program):
+    const_folder = ConstantFolder()
+    return program.accept(const_folder)
+
+
 class ConstantFolder(ASTNodeVisitor):
     def visit_number(self, node):
         return Number(node.value)
@@ -15,8 +20,8 @@ class ConstantFolder(ASTNodeVisitor):
 
     def visit_conditional(self, node):
         condition = node.condition.accept(self)
-        if_true = [cmd.accept(self) for cmd in node.if_true]
-        if_false = [cmd.accept(self) for cmd in node.if_false]
+        if_true = [cmd.accept(self) for cmd in node.if_true or []]
+        if_false = [cmd.accept(self) for cmd in node.if_false or []]
         return Conditional(condition, if_true, if_false)
 
     def visit_print(self, node):

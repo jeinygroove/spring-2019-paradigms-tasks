@@ -4,12 +4,6 @@ from model import *
 from printer import *
 
 
-def pretty_print(program):
-    printer = PrettyPrinter()
-    program.accept(printer)
-    return str(printer)
-
-
 def test_program1():
     program = FunctionDefinition('main', Function(['arg1'], [
         Read('x'),
@@ -29,14 +23,14 @@ def test_program1():
 
     assert pretty_print(program) == """\
 def main(arg1) {
-    read x;
-    print x;
-    if ((2) == (3)) {
-        if (1) {
-        }
-    } else {
-        exit(-(arg1));
-    }
+\tread x;
+\tprint x;
+\tif ((2) == (3)) {
+\t\tif (1) {
+\t\t}
+\t} else {
+\t\texit(-(arg1));
+\t}
 }"""
 
 
@@ -66,11 +60,11 @@ def test_program2():
 
     assert pretty_print(program) == """\
 def factorial(n) {
-    if ((n) == (0)) {
-        1;
-    } else {
-        (n) * (factorial((n) - (1)));
-    }
+\tif ((n) == (0)) {
+\t\t1;
+\t} else {
+\t\t(n) * (factorial((n) - (1)));
+\t}
 }"""
 
 

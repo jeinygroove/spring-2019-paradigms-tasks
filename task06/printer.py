@@ -2,18 +2,24 @@
 from model import ASTNodeVisitor
 
 
+def pretty_print(program):
+    printer = PrettyPrinter()
+    program.accept(printer)
+    return printer.get_code()
+
+
 class PrettyPrinter(ASTNodeVisitor):
     def __init__(self):
         self.code = ""
         self.indent = 0
 
-    def __str__(self):
+    def get_code(self):
         if not self.code.endswith('}'):
             self.code += ';'
         return self.code
 
     def newline(self):
-        self.code += "\n" + "    " * self.indent
+        self.code += "\n" + "\t" * self.indent
 
     def visit_block(self, block):
         if not block:

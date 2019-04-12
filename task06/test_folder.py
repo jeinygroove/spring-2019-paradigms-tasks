@@ -3,11 +3,6 @@ from folder import *
 from model import *
 
 
-def fold_constants(program):
-    const_folder = ConstantFolder()
-    return program.accept(const_folder)
-
-
 def test_end_to_end():
     program = BinaryOperation(
         Number(10),

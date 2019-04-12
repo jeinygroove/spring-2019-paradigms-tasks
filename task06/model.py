@@ -68,6 +68,7 @@ class ASTNode(metaclass=abc.ABCMeta):
         Запускает вычисление текущего узла синтаксического дерева
         в заданной области видимости и возвращает результат вычисления.
         """
+
     @abc.abstractmethod
     def accept(self, visitor):
         pass
@@ -166,16 +167,15 @@ class Conditional(ASTNode):
 
     def evaluate(self, scope):
         block = None
-        if self.condition.evaluate(scope) == Number(0):
+        if not self.condition.evaluate(scope):
             if self.if_false:
                 block = self.if_false
         else:
             block = self.if_true
 
-        result = Number(-1)
-        if block:
-            for action in block:
-                result = action.evaluate(scope)
+        result = Number(0)
+        for action in block or []:
+            result = action.evaluate(scope)
         return result
 
     def accept(self, visitor):
