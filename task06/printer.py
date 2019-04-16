@@ -5,7 +5,7 @@ from model import ASTNodeVisitor
 def pretty_print(program):
     printer = PrettyPrinter()
     program.accept(printer)
-    return printer.get_code()
+    print(printer.get_code())
 
 
 class PrettyPrinter(ASTNodeVisitor):

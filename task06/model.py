@@ -166,13 +166,8 @@ class Conditional(ASTNode):
         self.if_false = if_false
 
     def evaluate(self, scope):
-        block = None
-        if not self.condition.evaluate(scope):
-            if self.if_false:
-                block = self.if_false
-        else:
-            block = self.if_true
-
+        block = self.if_true if self.condition.evaluate(scope) \
+            else self.if_false
         result = Number(0)
         for action in block or []:
             result = action.evaluate(scope)
