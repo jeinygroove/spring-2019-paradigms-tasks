@@ -51,7 +51,7 @@ class ConstantFolder(ASTNodeVisitor):
         elif isinstance(rhs, Number):
             if rhs.value == 0 and isinstance(lhs, Reference) and op == '*':
                 return Number(0)
-        elif isinstance(rhs, Reference):
+        elif isinstance(lhs, Reference) and isinstance(rhs, Reference):
             if lhs.name == rhs.name and op == '-':
                 return Number(0)
         return BinaryOperation(lhs, op, rhs)

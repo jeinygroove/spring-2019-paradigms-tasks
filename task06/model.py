@@ -47,12 +47,12 @@ class ASTNodeVisitor(metaclass=abc.ABCMeta):
 class Scope:
     def __init__(self, parent=None):
         self.parent = parent
-        self.dict = dict()
+        self.dict = {}
 
     def __getitem__(self, item):
         if item in self.dict:
             return self.dict[item]
-        elif self.parent is not None:
+        if self.parent is not None:
             return self.parent[item]
         else:
             raise KeyError(item)
