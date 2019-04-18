@@ -6,10 +6,13 @@
 
 // Намек компилятору, что мы также хотим использовать наш модуль из файла `field.rs`.
 mod field;
+extern crate threadpool;
+use threadpool::ThreadPool;
 
 // Чтобы не писать `field::Cell:Empty`, можно "заимпортировать" нужные вещи из модуля.
 use field::Cell::*;
 use field::{parse_field, Field, N};
+use std::sync::mpsc::{channel, Sender};
 
 /// Эта функция выполняет один шаг перебора в поисках решения головоломки.
 /// Она перебирает значение какой-нибудь пустой клетки на поле всеми непротиворечивыми способами.
@@ -164,12 +167,48 @@ fn find_solution(f: &mut Field) -> Option<Field> {
     try_extend_field(f, |f_solved| f_solved.clone(), find_solution)
 }
 
+fn spawn_tasks(f: &mut Field, pool: &ThreadPool, tx: Sender<Option<Field>>, curr_depth: i32) {
+    if curr_depth > 1 {
+        let next_step_cb = |fld: &mut Field| -> Option<Field> {
+            let tx = tx.clone();
+            let mut fld = fld.clone();
+            spawn_tasks(&mut fld, pool, tx, curr_depth - 1);
+            None
+        };
+        let solved_cb = |fld: &mut Field| -> Field {
+            let tx = tx.clone();
+            tx.send(Some(fld.clone())).unwrap_or(());
+            fld.clone()
+        };
+        try_extend_field(f, solved_cb, next_step_cb);
+    } else {
+        let next_step_cb = |fld: &mut Field| -> Option<Field> {
+            let tx = tx.clone();
+            let mut fld = fld.clone();
+            pool.execute(move || {
+                tx.send(find_solution(&mut fld)).unwrap_or(());
+            });
+            None
+        };
+        let solved_cb = |fld: &mut Field| -> Field {
+            let tx = tx.clone();
+            tx.send(Some(fld.clone())).unwrap_or(());
+            fld.clone()
+        };
+        try_extend_field(f, solved_cb, next_step_cb);
+    }
+}
+
 /// Перебирает все возможные решения головоломки, заданной параметром `f`, в несколько потоков.
 /// Если хотя бы одно решение `s` существует, возвращает `Some(s)`,
 /// в противном случае возвращает `None`.
 fn find_solution_parallel(mut f: Field) -> Option<Field> {
-    // TODO: вам требуется изменить эту функцию.
-    find_solution(&mut f)
+    const SPAWN_DEPTH: i32 = 2;
+    let n_workers = 8;
+    let pool = ThreadPool::new(n_workers);
+    let (tx, rx) = channel();
+    spawn_tasks(&mut f, &pool, tx, SPAWN_DEPTH);
+    rx.into_iter().find_map(|x| x)
 }
 
 /// Юнит-тест, проверяющий, что `find_solution()` находит лексикографически минимальное решение на пустом поле.
