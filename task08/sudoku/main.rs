@@ -7,6 +7,7 @@
 // Намек компилятору, что мы также хотим использовать наш модуль из файла `field.rs`.
 mod field;
 extern crate threadpool;
+
 use threadpool::ThreadPool;
 
 // Чтобы не писать `field::Cell:Empty`, можно "заимпортировать" нужные вещи из модуля.
@@ -167,35 +168,24 @@ fn find_solution(f: &mut Field) -> Option<Field> {
     try_extend_field(f, |f_solved| f_solved.clone(), find_solution)
 }
 
-fn spawn_tasks(f: &mut Field, pool: &ThreadPool, tx: Sender<Option<Field>>, curr_depth: i32) {
-    if curr_depth > 1 {
-        let next_step_cb = |fld: &mut Field| -> Option<Field> {
-            let tx = tx.clone();
-            let mut fld = fld.clone();
-            spawn_tasks(&mut fld, pool, tx, curr_depth - 1);
-            None
-        };
-        let solved_cb = |fld: &mut Field| -> Field {
-            let tx = tx.clone();
-            tx.send(Some(fld.clone())).unwrap_or(());
-            fld.clone()
-        };
-        try_extend_field(f, solved_cb, next_step_cb);
+fn spawn_tasks(f: &mut Field, pool: &ThreadPool, tx: &Sender<Option<Field>>, curr_depth: i32) {
+    if curr_depth == 0 {
+        let tx = tx.clone();
+        let mut f = f.clone();
+        pool.execute(move || {
+            tx.send(find_solution(&mut f)).unwrap_or(());
+        });
     } else {
-        let next_step_cb = |fld: &mut Field| -> Option<Field> {
-            let tx = tx.clone();
-            let mut fld = fld.clone();
-            pool.execute(move || {
-                tx.send(find_solution(&mut fld)).unwrap_or(());
-            });
-            None
-        };
-        let solved_cb = |fld: &mut Field| -> Field {
-            let tx = tx.clone();
-            tx.send(Some(fld.clone())).unwrap_or(());
-            fld.clone()
-        };
-        try_extend_field(f, solved_cb, next_step_cb);
+        try_extend_field(
+            f,
+            |f| {
+                tx.send(Some(f.clone())).unwrap_or(());
+            },
+            |f| {
+                spawn_tasks(f, pool, tx, curr_depth - 1);
+                None
+            },
+        );
     }
 }
 
@@ -207,7 +197,8 @@ fn find_solution_parallel(mut f: Field) -> Option<Field> {
     let n_workers = 8;
     let pool = ThreadPool::new(n_workers);
     let (tx, rx) = channel();
-    spawn_tasks(&mut f, &pool, tx, SPAWN_DEPTH);
+    spawn_tasks(&mut f, &pool, &tx, SPAWN_DEPTH);
+    std::mem::drop(tx);
     rx.into_iter().find_map(|x| x)
 }
 
