@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
 from model import *
 
 
 def fold_constants(program):
-    const_folder = ConstantFolder()
-    return program.accept(const_folder)
+    return program.accept(ConstantFolder())
 
 
 class ConstantFolder(ASTNodeVisitor):
@@ -12,7 +10,7 @@ class ConstantFolder(ASTNodeVisitor):
         return Number(node.value)
 
     def visit_function(self, node):
-        body = [cmd.accept(self) for cmd in node.body]
+        body = [statement.accept(self) for statement in node.body]
         return Function(node.args, body)
 
     def visit_function_definition(self, node):
@@ -20,13 +18,14 @@ class ConstantFolder(ASTNodeVisitor):
 
     def visit_conditional(self, node):
         condition = node.condition.accept(self)
-        if_true = [cmd.accept(self) for cmd in node.if_true or []]
-        if_false = [cmd.accept(self) for cmd in node.if_false or []]
+        if_true = [statement.accept(self) for statement
+                   in node.if_true or []]
+        if_false = [statement.accept(self) for statement
+                    in node.if_false or []]
         return Conditional(condition, if_true, if_false)
 
     def visit_print(self, node):
-        expr = node.expr.accept(self)
-        return Print(expr)
+        return Print(node.expr.accept(self))
 
     def visit_read(self, node):
         return Read(node.name)
@@ -43,17 +42,18 @@ class ConstantFolder(ASTNodeVisitor):
         lhs = node.lhs.accept(self)
         rhs = node.rhs.accept(self)
         op = node.op
-        if isinstance(lhs, Number):
-            if isinstance(rhs, Number):
-                return BinaryOperation(lhs, op, rhs).evaluate(Scope())
-            if lhs.value == 0 and isinstance(rhs, Reference) and op == '*':
-                return Number(0)
-        elif isinstance(rhs, Number):
-            if rhs.value == 0 and isinstance(lhs, Reference) and op == '*':
-                return Number(0)
-        elif isinstance(lhs, Reference) and isinstance(rhs, Reference):
-            if lhs.name == rhs.name and op == '-':
-                return Number(0)
+        if isinstance(lhs, Number) and isinstance(rhs, Number):
+            return BinaryOperation(lhs, op, rhs).evaluate(Scope())
+        if (isinstance(lhs, Number) and lhs.value == 0 and
+                isinstance(rhs, Reference) and op == '*'):
+            return Number(0)
+        if (isinstance(rhs, Number) and rhs.value == 0 and
+                isinstance(lhs, Reference) and op == '*'):
+            return Number(0)
+        if (isinstance(lhs, Reference) and isinstance(rhs, Reference)
+                and lhs.name == rhs.name
+                and op == '-'):
+            return Number(0)
         return BinaryOperation(lhs, op, rhs)
 
     def visit_unary_operation(self, node):
