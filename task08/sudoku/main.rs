@@ -168,8 +168,8 @@ fn find_solution(f: &mut Field) -> Option<Field> {
     try_extend_field(f, |f_solved| f_solved.clone(), find_solution)
 }
 
-fn spawn_tasks(f: &mut Field, pool: &ThreadPool, tx: &Sender<Option<Field>>, curr_depth: i32) {
-    if curr_depth == 0 {
+fn spawn_tasks(f: &mut Field, pool: &ThreadPool, tx: &Sender<Option<Field>>, cur_depth: i32) {
+    if cur_depth == 0 {
         let tx = tx.clone();
         let mut f = f.clone();
         pool.execute(move || {
@@ -182,7 +182,7 @@ fn spawn_tasks(f: &mut Field, pool: &ThreadPool, tx: &Sender<Option<Field>>, cur
                 tx.send(Some(f.clone())).unwrap_or(());
             },
             |f| {
-                spawn_tasks(f, pool, tx, curr_depth - 1);
+                spawn_tasks(f, pool, tx, cur_depth - 1);
                 None
             },
         );
