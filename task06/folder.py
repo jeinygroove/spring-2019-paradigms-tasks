@@ -44,15 +44,14 @@ class ConstantFolder(ASTNodeVisitor):
         op = node.op
         if isinstance(lhs, Number) and isinstance(rhs, Number):
             return BinaryOperation(lhs, op, rhs).evaluate(Scope())
-        if (isinstance(lhs, Number) and lhs.value == 0 and
-                isinstance(rhs, Reference) and op == '*'):
+        if (op == '*' and isinstance(lhs, Number) and lhs.value == 0 and
+                isinstance(rhs, Reference)):
             return Number(0)
-        if (isinstance(rhs, Number) and rhs.value == 0 and
-                isinstance(lhs, Reference) and op == '*'):
+        if (op == '*' and isinstance(rhs, Number) and rhs.value == 0 and
+                isinstance(lhs, Reference)):
             return Number(0)
-        if (isinstance(lhs, Reference) and isinstance(rhs, Reference)
-                and lhs.name == rhs.name
-                and op == '-'):
+        if (op == '-' and isinstance(lhs, Reference) and
+                isinstance(rhs, Reference) and lhs.name == rhs.name):
             return Number(0)
         return BinaryOperation(lhs, op, rhs)
 
