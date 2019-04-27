@@ -45,10 +45,8 @@ TEST_CASE("ThreadsafeQueue multithreaded ping-pong") {
         for (int i = 0; i < PING_PONGS; i++) {
             int number = 73;
             threadsafe_queue_push(&qs[0], &number);
-            int *result =
-                static_cast<int *>(threadsafe_queue_wait_and_pop(&qs[1]));
             REQUIRE(number == 74);
-            REQUIRE(result == &number);
+            REQUIRE(static_cast<int *>(threadsafe_queue_wait_and_pop(&qs[1])) == &number);
         }
         return nullptr;
     };
@@ -67,8 +65,8 @@ TEST_CASE("ThreadsafeQueue multithreaded ping-pong") {
     pthread_t t1, t2;
     REQUIRE(pthread_create(&t1, nullptr, pinger, qs) == 0);
     REQUIRE(pthread_create(&t2, nullptr, ponger, qs) == 0);
-    REQUIRE(pthread_join(t1, nullptr) == 0);
     REQUIRE(pthread_join(t2, nullptr) == 0);
+    REQUIRE(pthread_join(t1, nullptr) == 0);
 
     threadsafe_queue_destroy(&qs[1]);
     threadsafe_queue_destroy(&qs[0]);
