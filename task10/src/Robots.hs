@@ -35,13 +35,13 @@ getHealth (_, _, myHealth) = myHealth
 -- состояние робота
 
 setName :: Name -> Robot -> Robot
-setName name r = (name, getAttack r, getHealth r)
+setName name r = robot name (getAttack r) (getHealth r)
 
 setAttack :: Attack -> Robot -> Robot
-setAttack attack r = (getName r, attack, getHealth r) 
+setAttack attack r = robot (getName r) attack (getHealth r) 
 
 setHealth :: Health -> Robot -> Robot
-setHealth health r = (getName r, getAttack r, health)
+setHealth health r = robot (getName r) (getAttack r) health
 
 -- Шаг 2.
 -- Напишите функцию, которая ведет себя как __str__
@@ -77,8 +77,8 @@ isAlive r = getHealth r > 0
 -- вернуть второго робота, как будто ничего и не было
 fight :: Robot -> Robot -> Robot
 fight attacker defender
-  | isAlive attacker = damage defender $ getAttack attacker
-  | otherwise        = defender
+    | isAlive attacker = damage defender $ getAttack attacker
+    | otherwise        = defender
 
 -- Наконец, напишите функцию, которая бы моделировала три раунда схватки между
 -- двумя роботами и возвращала бы победителя. Схватка происходит следующим образом:
@@ -110,7 +110,7 @@ neueRobot = robot "Terminator" 1500 2500
 -- Используя частичное применение напишите функцию, которая бы принимала на вход робота
 -- и атаковала бы его роботом neueRobot
 neueRobotAttack :: Robot -> Robot
-neueRobotAttack defender = fight neueRobot defender
+neueRobotAttack _ = fight neueRobot _
 
 -- Наконец, используя filter определите, кто из роботов, которых вы положили в список roboter,
 -- выживет, если neueRobot сразится с ним в одном раунде.

@@ -48,7 +48,7 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         filter' (> 0) [-1, -2, 1, -4, 3] @?= [1, 3]
     
     , testCase "filter' works on an empty list too" $
-        filter' id [] @?= []
+        filter' odd [] @?= []
 
     , testCase "filter' works on an infinite list" $
         take' 3 (filter' odd [1..]) @?= [1, 3, 5]

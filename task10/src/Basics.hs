@@ -30,10 +30,10 @@ drop' n (_:xs) = drop' (n - 1) xs
 filter' :: (a -> Bool) -> [a] -> [a]
 filter' _ []  = []
 filter' f (x:xs) 
-  | f x       = x : xs'
-  | otherwise = xs'
-  where
-    xs' = filter' f xs
+    | f x       = x : xs'
+    | otherwise = xs'
+    where
+      xs' = filter' f xs
 
 
 -- 6. foldl'' последовательно применяет функцию f к элементу списка l и значению,
