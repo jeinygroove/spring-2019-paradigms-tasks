@@ -13,10 +13,7 @@ testsRobots = let
         charley = robot "Charley" 100 500
         kremlinBot = robot "Kbot" 0 (-1000)
     in testGroup "Unit tests for Robots task"
-        [ testCase "Test for getName" $
-            getName walter @?= "Walter"
-
-        , testCase "Test for 'printRobot'" $
+        [ testCase "Test for 'printRobot'" $
             printRobot walter @?= "Walter, attack: 50, health: 50"
 
         , testCase "Test for 'robot' (init Robot)" $

@@ -17,6 +17,9 @@ testsBasics = testGroup "Unit tests for Basics tasks"
     , testCase "tail' works on an empty list" $
         tail' ([] :: [Integer]) @?= []
 
+    , testCase "tail' works on an infinite list" $
+        take' 3 (tail' [1..]) @?= [2, 3, 4]
+
     , testCase "tail' works on a non-empty list too" $
         tail' [1,2,3] @?= [2,3]
 
@@ -28,6 +31,9 @@ testsBasics = testGroup "Unit tests for Basics tasks"
 
     , testCase "drop' drops 1 element from a 3-element list" $
         drop' 1 [1,2,3] @?= [2,3]
+
+    , testCase "drop' drops 3 element from an infinite list" $
+        take' 100 (drop' 3 [1..]) @?= take' 100 [4..]
 
     , testCase "drop' returns empty list if we want to drop more elements than the list has" $
         drop' 5 [1, 2, 3] @?= []
@@ -42,8 +48,11 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         filter' (> 0) [-1, -2, 1, -4, 3] @?= [1, 3]
     
     , testCase "filter' works on an empty list too" $
-        filter' (id) [] @?= []
+        filter' id [] @?= []
 
+    , testCase "filter' works on an infinite list" $
+        take' 3 (filter' odd [1..]) @?= [1, 3, 5]
+ 
     , testCase "foldl'' can be used for finding sum of elements" $
         foldl'' (+) 0 [1,2,3] @?= 6
     
@@ -54,13 +63,13 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         foldl'' (*) 1 [1, 2, 3, 4, 5] @?= 120
 
     , testCase "foldl'' works correctly if operation isn't associative" $
-        foldl'' (/) 16 [2, 4] @?= 2
+        foldl'' (-) 0 [1, 2, 4] @?= -7
 
     , testCase "concat' works on finite lists as expected" $
         concat' [1,2,3] [4,5,6] @?= [1..6]
 
     , testCase "concat' works when the first list is infinite" $
-        take' 3 (concat' [1..] [1..]) @?= [1, 2, 3]
+        take' 3 (concat' [1..] [1, 2, 3]) @?= [1, 2, 3]
 
     , testCase "concat' works when the second list is infinite" $
         take' 5 (concat' [1, 2, 3] [4..]) @?= [1, 2, 3, 4, 5]

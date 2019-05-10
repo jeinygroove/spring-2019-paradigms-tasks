@@ -4,10 +4,6 @@ module Basics where
 -- В этом задании запрещается использовать какие-либо функции из стандартной библиотеки.
 -- Однако разрешается использовать реализованные самостоятельно
 
-length' :: [a] -> Int
-length' []     = 0
-length' (_:xs) = 1 + length' xs
-
 -- 1. head' возвращает первый элемент непустого списка
 head' :: [a] -> a
 head' []    = error "There is no head, because list is empty!"
@@ -21,7 +17,6 @@ tail' (_:xs) = xs
 -- 3. take' возвращает первые n >= 0 элементов исходного списка
 take' :: Int -> [a] -> [a]
 take' 0 _      = []
-take' _ []     = []
 take' n (x:xs) = x : take' (n - 1) xs
 
 -- 4. drop' возвращает список без первых n >= 0 элементов; если n больше длины
@@ -37,7 +32,9 @@ filter' _ []  = []
 filter' f (x:xs) 
   | f x       = x : xs'
   | otherwise = xs'
-  where xs'   = filter' f xs
+  where
+    xs' = filter' f xs
+
 
 -- 6. foldl'' последовательно применяет функцию f к элементу списка l и значению,
 -- полученному на предыдущем шаге, начальное значение
@@ -45,7 +42,7 @@ filter' f (x:xs)
 -- foldl'' (*) 4 [] == 4
 foldl'' :: (a -> b -> a) -> a -> [b] -> a
 foldl'' _ z []     = z
-foldl'' f z (x:xs) = f (foldl'' f z xs) x 
+foldl'' f z (x:xs) = foldl'' f (f z x) xs
 
 -- 7. concat' принимает на вход два списка и возвращает их конкатенацию
 -- concat' [1,2] [3] == [1,2,3]
@@ -59,6 +56,6 @@ concat' (x:xs) ys = x : concat' xs ys
 quickSort' :: Ord a => [a] -> [a]
 quickSort' []      = []
 quickSort' (x:xs)  = 
-  let smallerElems = filter' (<= x) xs
-      largerElems  = filter' (> x) xs
-  in concat' (quickSort' smallerElems) (concat' [x]  (quickSort' largerElems))
+  let le = filter' (<= x) xs
+      gt = filter' (> x) xs
+  in concat' (quickSort' le) (x : (quickSort' gt))
