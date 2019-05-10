@@ -110,7 +110,7 @@ neueRobot = robot "Terminator" 1500 2500
 -- Используя частичное применение напишите функцию, которая бы принимала на вход робота
 -- и атаковала бы его роботом neueRobot
 neueRobotAttack :: Robot -> Robot
-neueRobotAttack _ = fight neueRobot _
+neueRobotAttack = fight neueRobot
 
 -- Наконец, используя filter определите, кто из роботов, которых вы положили в список roboter,
 -- выживет, если neueRobot сразится с ним в одном раунде.
