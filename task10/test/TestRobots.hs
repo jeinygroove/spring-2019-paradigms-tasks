@@ -52,11 +52,11 @@ testsRobots = let
         , testCase "Test for 'fight' where robot haven't been damaged" $
             fight kremlinBot charley @?= charley
 
-        , testCase "Test 1 for 'threeRoundFight'" $
+        , testCase "Test for 'threeRoundFight' when the first robot wins" $
             threeRoundFight charley david @?= ("Charley", 100, 480)
 
-        , testCase "Test 2 for 'threeRoundFight'" $
-            threeRoundFight david walter @?= ("David", 20, 250)
+        , testCase "Test 2 for 'threeRoundFight' when the second robot wins" $
+            threeRoundFight walter charley @?= ("Charley", 100, 450)
 
         , testCase "Test for 'neueRobotAttack'" $
             neueRobotAttack david @?= ("David", 20, (-1200)) 

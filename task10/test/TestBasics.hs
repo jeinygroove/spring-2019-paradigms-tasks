@@ -63,7 +63,7 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         foldl'' (*) 1 [1, 2, 3, 4, 5] @?= 120
 
     , testCase "foldl'' works correctly if operation isn't associative" $
-        foldl'' (-) 0 [1..10] @?= -55
+        foldl'' (++) [1] [[2], [3], [4]] @?= [1, 2, 3, 4]
 
     , testCase "concat' works on finite lists as expected" $
         concat' [1,2,3] [4,5,6] @?= [1..6]
