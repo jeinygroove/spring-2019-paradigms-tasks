@@ -58,4 +58,4 @@ quickSort' []      = []
 quickSort' (x:xs)  = 
   let le = filter' (<= x) xs
       gt = filter' (> x) xs
-  in concat' (quickSort' le) (x : (quickSort' gt))
+  in concat' (quickSort' le) (x : quickSort' gt)

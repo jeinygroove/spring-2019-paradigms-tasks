@@ -63,16 +63,16 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         foldl'' (*) 1 [1, 2, 3, 4, 5] @?= 120
 
     , testCase "foldl'' works correctly if operation isn't associative" $
-        foldl'' (-) 0 [1, 2, 4] @?= -7
+        foldl'' (-) 0 [1..10] @?= -55
 
     , testCase "concat' works on finite lists as expected" $
         concat' [1,2,3] [4,5,6] @?= [1..6]
 
     , testCase "concat' works when the first list is infinite" $
-        take' 3 (concat' [1..] [1, 2, 3]) @?= [1, 2, 3]
+        take' 3 (concat' [1..] [1, 2, 3]) @?= take' 3 [1..]
 
     , testCase "concat' works when the second list is infinite" $
-        take' 5 (concat' [1, 2, 3] [4..]) @?= [1, 2, 3, 4, 5]
+        take' 5 (concat' [1, 2, 3] [4..]) @?= take' 5 [1..]
 
     , testCase "quickSort actualy sorts the list" $
         quickSort' [5,2,3,4,1] @?= [1..5]
