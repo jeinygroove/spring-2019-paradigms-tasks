@@ -33,10 +33,10 @@ mapTests name (_ :: Proxy m) =
                 Map.null map @?= True,
 
             testCase "fromList can construct a not empty map" $
-                let map = fromList [(1, "Hello"), (2, "world!")] :: m Int String in
-                (Map.size map     == 2            &&
-                 Map.lookup 1 map == Just "Hello" &&
-                 Map.lookup 2 map == Just "world!") @?= True,
+                let map = fromList [(1, "Hello"), (2, "world!")] :: m Int String in do
+                Map.size map     @?= 2
+                Map.lookup 1 map @?= Just "Hello"
+                Map.lookup 2 map @?= Just "world!",
 
             testCase "toAscList . fromList sorts list" $
                 let map = fromList [(2, "a"), (1, "b"), (3, "c"), (1, "x")] :: m Int String in
@@ -102,15 +102,15 @@ mapTests name (_ :: Proxy m) =
 
             testCase "delete doesn't change a map if key doesn't exist" $
                 let map  = singleton 1 "PF" :: m Int String in
-                let new_map = Map.delete 2 map in
-                (Map.size new_map     == 1         &&
-                 Map.lookup 1 new_map == Just "PF") @?= True,
+                let new_map = Map.delete 2 map in do
+                Map.size new_map     @?= 1 
+                Map.lookup 1 new_map @?= Just "PF",
 
             testCase "delete deletes if key exists" $
                 let map  = Map.fromList [(1, "PF"), (2, "S")] :: m Int String in
-                let new_map = Map.delete 1 map in
-                (Map.size new_map     == 1 &&
-                 Map.lookup 2 new_map == Just "S") @?= True
+                let new_map = Map.delete 1 map in do
+                Map.size new_map     @?= 1
+                Map.lookup 2 new_map @?= Just "S"
         ], 
 
         testGroup "Unite test for adjust" [
@@ -121,15 +121,15 @@ mapTests name (_ :: Proxy m) =
 
             testCase "adjust doesn't change a map if key doesn't exist" $
                 let map  = singleton 1 "PF" :: m Int String in
-                let new_map = Map.adjust ("new " ++) 2 map in
-                (Map.size new_map     == 1 &&
-                 Map.lookup 1 new_map == Just "PF") @?= True,
+                let new_map = Map.adjust ("new " ++) 2 map in do
+                Map.size new_map     @?= 1
+                Map.lookup 1 new_map @?= Just "PF",
 
             testCase "adjust updates value if key exists" $
                 let map  = singleton 1 "PF" :: m Int String in
-                let new_map = Map.adjust ("new " ++) 1 map in
-                (Map.size new_map     == 1 &&
-                 Map.lookup 1 new_map == Just "new PF") @?= True
+                let new_map = Map.adjust ("new " ++) 1 map in do
+                Map.size new_map     @?= 1
+                Map.lookup 1 new_map @?= Just "new PF"
         ], 
 
         testGroup "Unite test for adjustWithKey" [
@@ -140,15 +140,15 @@ mapTests name (_ :: Proxy m) =
 
             testCase "adjustWithKey doesn't change a map if key does not exist" $
                 let map  = singleton 1 "PF" :: m Int String in
-                let new_map = Map.adjustWithKey (\k x -> show k ++ " new " ++ x) 2 map in
-                (Map.size new_map     == 1 &&
-                 Map.lookup 1 new_map == Just "PF") @?= True,
+                let new_map = Map.adjustWithKey (\k x -> show k ++ " new " ++ x) 2 map in do
+                Map.size new_map     @?= 1
+                Map.lookup 1 new_map @?= Just "PF",
 
             testCase "adjustWithKey updates value if key exists" $
                 let map  = singleton 1 "PF" :: m Int String in
-                let new_map = Map.adjustWithKey (\k x -> show k ++ " new " ++ x) 1 map in
-                (Map.size new_map     == 1 &&
-                 Map.lookup 1 new_map == Just "1 new PF") @?= True
+                let new_map = Map.adjustWithKey (\k x -> show k ++ " new " ++ x) 1 map in do
+                Map.size new_map     @?= 1
+                Map.lookup 1 new_map @?= Just "1 new PF"
         ], 
 
         testGroup "Unite test for update" [
@@ -159,15 +159,15 @@ mapTests name (_ :: Proxy m) =
 
             testCase "update doesn't change a map if key does not exist" $
                 let map  = singleton 1 "PF" :: m Int String in
-                let new_map = Map.update (\x -> if x == "PF" then Just "new PF" else Nothing) 2 map in
-                (Map.size new_map     == 1 &&
-                 Map.lookup 1 new_map == Just "PF") @?= True,
+                let new_map = Map.update (\x -> if x == "PF" then Just "new PF" else Nothing) 2 map in do
+                Map.size new_map     @?= 1
+                Map.lookup 1 new_map @?= Just "PF",
 
             testCase "update updates value if key exists" $
                 let map  = singleton 1 "PF" :: m Int String in
-                let new_map = Map.update (\x -> if x == "PF" then Just "new PF" else Nothing) 1 map in
-                (Map.size new_map     == 1 &&
-                 Map.lookup 1 new_map == Just "new PF") @?= True,
+                let new_map = Map.update (\x -> if x == "PF" then Just "new PF" else Nothing) 1 map in do
+                Map.size new_map     @?= 1
+                Map.lookup 1 new_map @?= Just "new PF",
 
             testCase "update deletes the key if function has Nothing as a return value" $
                 let map  = singleton 1 "S" :: m Int String in
@@ -183,15 +183,15 @@ mapTests name (_ :: Proxy m) =
 
             testCase "updateWithKey does nothing if key does not exist" $
                 let map  = singleton 1 "PF" :: m Int String in
-                let new_map = Map.updateWithKey (\k x -> if x == "PF" then Just (show k ++ " new PF") else Nothing) 2 map in
-                (Map.size new_map     == 1 &&
-                Map.lookup 1 new_map == Just "PF") @?= True,
+                let new_map = Map.updateWithKey (\k x -> if x == "PF" then Just (show k ++ " new PF") else Nothing) 2 map in do
+                Map.size new_map    @?= 1
+                Map.lookup 1 new_map @?= Just "PF",
 
             testCase "updateWithKey updates the value if the key exists" $
                 let map  = singleton 1 "PF" :: m Int String in
-                let new_map = Map.updateWithKey (\k x -> if x == "PF" then Just (show k ++ " new PF") else Nothing) 1 map in
-                (Map.size new_map     == 1 &&
-                 Map.lookup 1 new_map == Just "1 new PF") @?= True,
+                let new_map = Map.updateWithKey (\k x -> if x == "PF" then Just (show k ++ " new PF") else Nothing) 1 map in do
+                Map.size new_map     @?= 1
+                Map.lookup 1 new_map @?= Just "1 new PF",
 
             testCase "updateWithKey deletes the key if function returns Nothing" $
                 let map  = singleton 1 "S" :: m Int String in
@@ -235,7 +235,26 @@ mapTests name (_ :: Proxy m) =
             testCase "singleton returns a singleton map" $
                 let map = singleton 1 "PF" :: m Int String in
                 Map.size map @?= 1
-        ] 
+        ], 
+        
+        testGroup "Unite test for alter" [
+            testCase "adjust doesn't change a map an empty map" $
+                let map  = empty :: m Int String in
+                let new_map = Map.adjust ("new " ++) 1 map in
+                Map.null new_map @?= True,
+
+            testCase "adjust doesn't change a map if key does not exist" $
+                let map  = singleton 1 "PF" :: m Int String in
+                let new_map = Map.adjust ("new " ++) 2 map in do
+                Map.size new_map     @?= 1
+                Map.lookup 1 new_map @?= Just "PF",
+
+            testCase "adjust updates value if key exists" $
+                let map  = singleton 1 "PF" :: m Int String in
+                let new_map = Map.adjust ("new " ++) 1 map in do
+                Map.size new_map     @?= 1
+                Map.lookup 1 new_map @?= Just "new PF"
+        ]
     ]
 
 testNaiveTree :: TestTree
